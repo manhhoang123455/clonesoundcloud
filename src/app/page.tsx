@@ -1,8 +1,12 @@
+import MainSlider from "./main/main.slider";
+import { Container } from "@mui/material";
 
 export default function HomePage() {
   return (
-    <div>
-      Home Page
-    </div>
+    <Container>
+      <MainSlider />
+      <MainSlider />
+      <MainSlider />
+    </Container>
   );
 }
