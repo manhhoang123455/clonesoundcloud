@@ -17,6 +17,9 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 //styled-component
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -57,6 +60,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 export default function AppHeader() {
+    const router = useRouter();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
         React.useState<null | HTMLElement>(null);
@@ -68,6 +72,10 @@ export default function AppHeader() {
     const handleMobileMenuClose = () => {
         setMobileMoreAnchorEl(null);
     };
+    const handleRedirectHome = () => {
+        router.push("/")
+    };
+
     const handleMenuClose = () => {
         setAnchorEl(null);
         handleMobileMenuClose();
@@ -86,8 +94,15 @@ export default function AppHeader() {
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+            <MenuItem>
+                <Link href={"/profile"} style={{
+                    color: "unset",
+                    textDecoration: "unset"
+                }}>
+                    Profile
+                </Link>
+            </MenuItem>
+            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
         </Menu>
     );
     const mobileMenuId = 'primary-search-account-menu-mobile';
@@ -154,7 +169,11 @@ export default function AppHeader() {
                             variant="h6"
                             noWrap
                             component="div"
-                            sx={{ display: { xs: 'none', sm: 'block' } }}
+                            sx={{
+                                display: { xs: 'none', sm: 'block' },
+                                cursor: "pointer"
+                            }}
+                            onClick={() => handleRedirectHome()}
                         >
                             SOUND CLOUD APP
                         </Typography>
@@ -172,10 +191,14 @@ export default function AppHeader() {
                             display: { xs: 'none', md: 'flex' },
                             gap: "20px",
                             alignItems: "center",
-                            cursor: "pointer"
+                            cursor: "pointer",
+                            " > a": {
+                                color: "unset",
+                                textDecoration: "unset"
+                            }
                         }}>
-                            <span>Playlist</span>
-                            <span>Likes</span>
+                            <Link href={"/playlist"}>Playlists</Link>
+                            <Link href={"/like"}>Likes</Link>
                             <span>Upload</span>
                             <Avatar onClick={handleProfileMenuOpen}> HP </Avatar>
                         </Box>
