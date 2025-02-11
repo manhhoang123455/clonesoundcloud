@@ -1,24 +1,24 @@
 'use client'
 
-import { useRef, useMemo, useCallback, useState, useEffect } from "react";
-
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { useSearchParams } from 'next/navigation';
 import { useWavesurfer } from "@/utils/customHook";
-import { WaveSurferOptions } from "wavesurfer.js";
+import { WaveSurferOptions } from 'wavesurfer.js';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import PauseIcon from '@mui/icons-material/Pause';
 import './wave.scss';
-
-
 
 const WaveTrack = () => {
     const searchParams = useSearchParams()
     const fileName = searchParams.get('audio');
     const containerRef = useRef<HTMLDivElement>(null);
     const hoverRef = useRef<HTMLDivElement>(null);
+
     const [time, setTime] = useState<string>("0:00");
     const [duration, setDuration] = useState<string>("0:00");
 
-    const optionsMemo = useMemo((): Omit<WaveSurferOptions, 'container'> => {
 
+    const optionsMemo = useMemo((): Omit<WaveSurferOptions, 'container'> => {
         let gradient, progressGradient;
         if (typeof window !== "undefined") {
             const canvas = document.createElement('canvas');
@@ -31,6 +31,7 @@ const WaveTrack = () => {
             gradient.addColorStop((canvas.height * 0.7 + 2) / canvas.height, '#ffffff') // White line
             gradient.addColorStop((canvas.height * 0.7 + 3) / canvas.height, '#B1B1B1') // Bottom color
             gradient.addColorStop(1, '#B1B1B1') // Bottom color
+
             // Define the progress gradient
             progressGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 1.35)
             progressGradient.addColorStop(0, '#EE772F') // Top color
@@ -41,7 +42,6 @@ const WaveTrack = () => {
             progressGradient.addColorStop(1, '#F6B094') // Bottom color
         }
 
-
         return {
             waveColor: gradient,
             progressColor: progressGradient,
@@ -50,16 +50,14 @@ const WaveTrack = () => {
             url: `/api?audio=${fileName}`,
         }
     }, []);
-
-
     const wavesurfer = useWavesurfer(containerRef, optionsMemo);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
+    // Initialize wavesurfer when the container mounts
+    // or any of the props change
     useEffect(() => {
-
-        if (!wavesurfer) return
-
-        setIsPlaying(false)
+        if (!wavesurfer) return;
+        setIsPlaying(false);
 
         const hover = hoverRef.current!;
         const waveform = containerRef.current!;
@@ -74,11 +72,22 @@ const WaveTrack = () => {
             wavesurfer.on('timeupdate', (currentTime) => {
                 setTime(formatTime(currentTime));
             }),
+            wavesurfer.once('interaction', () => {
+                wavesurfer.play()
+            })
         ]
+
         return () => {
             subscriptions.forEach((unsub) => unsub())
         }
     }, [wavesurfer])
+
+    // On play button click
+    const onPlayClick = useCallback(() => {
+        if (wavesurfer) {
+            wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
+        }
+    }, [wavesurfer]);
 
     const formatTime = (seconds: number) => {
         const minutes = Math.floor(seconds / 60)
@@ -87,32 +96,109 @@ const WaveTrack = () => {
         return `${minutes}:${paddedSeconds}`
     }
 
-    const onPlayClick = useCallback(() => {
-        if (wavesurfer) {
-            wavesurfer.isPlaying() ? wavesurfer.pause() : wavesurfer.play();
-        }
-    }, [wavesurfer]);
-
     return (
-        <div style={{ marginTop: 100 }}>
-            <div ref={containerRef} className="wave-form-container">
-                <div className="time">{time}</div>
-                <div className="duration">{duration}</div>
-                <div ref={hoverRef} className="hover-wave"></div>
-                <div className="overlay"
+        <div style={{ marginTop: 20 }}>
+            <div
+                style={{
+                    display: "flex",
+                    gap: 15,
+                    padding: 20,
+                    height: 400,
+                    background: "linear-gradient(135deg, rgb(106, 112, 67) 0%, rgb(11, 15, 20) 100%)"
+                }}
+            >
+                <div className="left"
                     style={{
-                        position: "absolute",
-                        height: "30px",
-                        width: "100%",
-                        bottom: "0",
-                        background: "#ccc"
+                        width: "75%",
+                        height: "calc(100% - 10px)",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between"
                     }}
-                ></div>
+                >
+                    <div className="info" style={{ display: "flex" }}>
+                        <div>
+                            <div
+                                onClick={() => onPlayClick()}
+                                style={{
+                                    borderRadius: "50%",
+                                    background: "#f50",
+                                    height: "50px",
+                                    width: "50px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                {isPlaying === true ?
+                                    <PauseIcon
+                                        sx={{ fontSize: 30, color: "white" }}
+                                    />
+                                    :
+                                    <PlayArrowIcon
+                                        sx={{ fontSize: 30, color: "white" }}
+                                    />
+                                }
+                            </div>
+                        </div>
+                        <div style={{ marginLeft: 20 }}>
+                            <div style={{
+                                padding: "0 5px",
+                                background: "#333",
+                                fontSize: 30,
+                                width: "fit-content",
+                                color: "white"
+                            }}>
+                                Hỏi Dân IT's song
+                            </div>
+                            <div style={{
+                                padding: "0 5px",
+                                marginTop: 10,
+                                background: "#333",
+                                fontSize: 20,
+                                width: "fit-content",
+                                color: "white"
+                            }}
+                            >
+                                Eric
+                            </div>
+                        </div>
+                    </div>
+                    <div ref={containerRef} className="wave-form-container">
+                        <div className="time" >{time}</div>
+                        <div className="duration" >{duration}</div>
+                        <div ref={hoverRef} className="hover-wave"></div>
+                        <div className="overlay"
+                            style={{
+                                position: "absolute",
+                                height: "30px",
+                                width: "100%",
+                                bottom: "0",
+                                // background: "#ccc"
+                                backdropFilter: "brightness(0.5)"
+                            }}
+                        ></div>
+
+                    </div>
+                </div>
+                <div className="right"
+                    style={{
+                        width: "25%",
+                        padding: 15,
+                        display: "flex",
+                        alignItems: "center"
+                    }}
+                >
+                    <div style={{
+                        background: "#ccc",
+                        width: 250,
+                        height: 250
+                    }}>
+                    </div>
+                </div>
             </div>
-            <button onClick={() => onPlayClick()}>
-                {isPlaying === true ? "Pause" : "Play"}
-            </button>
-        </div>
+        </div >
     )
 }
 
