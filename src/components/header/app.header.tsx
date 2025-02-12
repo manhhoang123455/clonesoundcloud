@@ -20,7 +20,7 @@ import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSession } from "next-auth/react";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 //styled-component
 const Search = styled('div')(({ theme }) => ({
@@ -106,7 +106,12 @@ export default function AppHeader() {
                     Profile
                 </Link>
             </MenuItem>
-            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+            <MenuItem onClick={() => {
+                handleMenuClose();
+                signOut();
+            }
+
+            }>Logout</MenuItem>
         </Menu>
     );
     const mobileMenuId = 'primary-search-account-menu-mobile';
@@ -210,7 +215,9 @@ export default function AppHeader() {
 
                                 </> :
                                 <>
-                                    <Link href={"/api/auth/signin"}>Login</Link>
+                                    <Link href={"#"}
+                                        onClick={() => signIn()}
+                                    >Login</Link>
                                 </>
                             }
                         </Box>
@@ -231,6 +238,6 @@ export default function AppHeader() {
             </AppBar>
             {renderMobileMenu}
             {renderMenu}
-        </Box>
+        </Box >
     );
 }
