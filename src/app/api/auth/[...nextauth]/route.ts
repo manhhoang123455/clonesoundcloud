@@ -24,7 +24,7 @@ export const authOptions: AuthOptions = {
                 if (res && res.data) {
                     return res.data as any;
                 }
-                return null;
+                throw new Error(res?.message as string)
             }
         }),
         GithubProvider({
