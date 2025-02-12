@@ -3,11 +3,30 @@ import GithubProvider from "next-auth/providers/github"
 import { AuthOptions } from "next-auth"
 import { sendRequest } from "../../../../utils/api";
 import { JWT } from "next-auth/jwt";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: AuthOptions = {
     secret: process.env.NO_SECRET!,
 
     providers: [
+        CredentialsProvider({
+            name: "Credentials",
+            credentials: {
+                username: { label: "Username", type: "text", },
+                password: { label: "Password", type: "password", }
+            },
+            async authorize(credentials) {
+                const res = await sendRequest<IBackendRes<JWT>>({
+                    url: "http://localhost:8000/api/v1/auth/login",
+                    method: "POST",
+                    body: credentials
+                })
+                if (res && res.data) {
+                    return res.data as any;
+                }
+                return null;
+            }
+        }),
         GithubProvider({
             clientId: process.env.GITHUB_ID!,
             clientSecret: process.env.GITHUB_SECRET!,
@@ -16,17 +35,28 @@ export const authOptions: AuthOptions = {
 
     callbacks: {
         async jwt({ token, user, account, profile, trigger }) {
-            if (trigger === "signIn" && account?.provider === "github") {
+            if (trigger === "signIn" && account?.provider !== "credentials") {
                 const res = await sendRequest<IBackendRes<JWT>>({
                     url: "http://localhost:8000/api/v1/auth/social-media",
                     method: "POST",
-                    body: { type: "GITHUB", username: user.email },
+                    body: {
+                        type: account?.provider?.toLocaleUpperCase(),
+                        username: user.email
+                    },
                 })
                 if (res.data) {
                     token.access_token = res.data?.access_token;
                     token.refresh_token = res.data.refresh_token;
                     token.user = res.data.user;
                 }
+            }
+            if (trigger === "signIn" && account?.provider === "credentials") {
+                //@ts-ignore
+                token.access_token = user.access_token;
+                //@ts-ignore
+                token.refresh_token = user.refresh_token;
+                //@ts-ignore
+                token.user = user.user;
             }
             return token;
         },
