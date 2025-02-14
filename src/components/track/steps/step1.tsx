@@ -5,9 +5,9 @@ import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useCallback, useState } from 'react';
+import { sendRequest, sendRequestFile } from '@/utils/api';
 import { useSession } from "next-auth/react";
 import axios from 'axios';
-
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -40,19 +40,17 @@ interface IProps {
     trackUpload: any;
 }
 
-
 const Step1 = (props: IProps) => {
     const { trackUpload } = props;
     const { data: session } = useSession();
-
+    //useMemo => variable
     const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
+        // Do something with the files
         if (acceptedFiles && acceptedFiles[0]) {
             props.setValue(1);
-
             const audio = acceptedFiles[0];
             const formData = new FormData()
             formData.append('fileUpload', audio);
-
             try {
                 const res = await axios.post("http://localhost:8000/api/v1/files/upload", formData,
                     {
@@ -62,6 +60,7 @@ const Step1 = (props: IProps) => {
                         },
                         onUploadProgress: progressEvent => {
                             let percentCompleted = Math.floor((progressEvent.loaded * 100) / progressEvent.total!);
+
                             props.setTrackUpload({
                                 ...trackUpload,
                                 fileName: acceptedFiles[0].name,
@@ -71,14 +70,15 @@ const Step1 = (props: IProps) => {
                     })
                 props.setTrackUpload((prevState: any) => ({
                     ...prevState,
-                    uploadedTrackName: res.data.data.fileName,
+                    uploadedTrackName: res.data.data.fileName
                 }))
             } catch (error) {
                 //@ts-ignore
                 alert(error?.response?.data?.message)
             }
         }
-    }, [session]);
+
+    }, [session])
 
     const { acceptedFiles, getRootProps, getInputProps } = useDropzone({
         onDrop,
@@ -86,11 +86,13 @@ const Step1 = (props: IProps) => {
             'audio': [".mp3", ".m4a", ".wav"]
         }
     });
+
     const files = acceptedFiles.map((file: FileWithPath) => (
         <li key={file.path}>
             {file.path} - {file.size} bytes
         </li>
     ));
+
     return (
         <section className="container">
             <div {...getRootProps({ className: 'dropzone' })}>
@@ -106,4 +108,5 @@ const Step1 = (props: IProps) => {
         </section>
     );
 }
+
 export default Step1;

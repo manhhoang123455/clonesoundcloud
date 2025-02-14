@@ -1,5 +1,4 @@
 'use client'
-
 import * as React from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -11,6 +10,7 @@ import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
@@ -38,6 +38,7 @@ const Search = styled('div')(({ theme }) => ({
         width: 'auto',
     },
 }));
+
 const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
     height: '100%',
@@ -47,6 +48,7 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'center',
 }));
+
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
@@ -61,45 +63,57 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         },
     },
 }));
+
 export default function AppHeader() {
     const { data: session } = useSession();
+    console.log(">>> check session: ", session)
 
     const router = useRouter();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
         React.useState<null | HTMLElement>(null);
+
     const isMenuOpen = Boolean(anchorEl);
     const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
     const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleMobileMenuClose = () => {
         setMobileMoreAnchorEl(null);
-    };
-    const handleRedirectHome = () => {
-        router.push("/")
     };
 
     const handleMenuClose = () => {
         setAnchorEl(null);
         handleMobileMenuClose();
     };
+
     const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setMobileMoreAnchorEl(event.currentTarget);
     };
+
     const menuId = 'primary-search-account-menu';
     const renderMenu = (
         <Menu
             anchorEl={anchorEl}
+            // anchorOrigin={{
+            //     vertical: 'top',
+            //     horizontal: 'right',
+            // }}
             id={menuId}
             keepMounted
+            // transformOrigin={{
+            //     vertical: 'top',
+            //     horizontal: 'right',
+            // }}
             open={isMenuOpen}
             onClose={handleMenuClose}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
             <MenuItem>
-                <Link href={"/profile"} style={{
+                <Link href={`/profile/${session?.user?._id}`} style={{
                     color: "unset",
                     textDecoration: "unset"
                 }}>
@@ -109,11 +123,10 @@ export default function AppHeader() {
             <MenuItem onClick={() => {
                 handleMenuClose();
                 signOut();
-            }
-
-            }>Logout</MenuItem>
+            }}>Logout</MenuItem>
         </Menu>
     );
+
     const mobileMenuId = 'primary-search-account-menu-mobile';
     const renderMobileMenu = (
         <Menu
@@ -165,12 +178,18 @@ export default function AppHeader() {
             </MenuItem>
         </Menu>
     );
+
+    const handleRedirectHome = () => {
+        router.push("/")
+    }
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar
                 position="static"
-                sx={{ backgroundColor: "#2c2a30" }}
-
+                sx={{
+                    background: "#4c5c6c"
+                }}
             >
                 <Container>
                     <Toolbar>
@@ -184,7 +203,7 @@ export default function AppHeader() {
                             }}
                             onClick={() => handleRedirectHome()}
                         >
-                            SOUND CLOUD APP
+                            HoiDanIt SC
                         </Typography>
                         <Search>
                             <SearchIconWrapper>
@@ -201,27 +220,33 @@ export default function AppHeader() {
                             gap: "20px",
                             alignItems: "center",
                             cursor: "pointer",
-                            " > a": {
+
+                            "> a": {
                                 color: "unset",
                                 textDecoration: "unset"
                             }
                         }}>
-                            {session ?
-                                <>
-                                    <Link href={"/playlist"}>Playlists</Link>
-                                    <Link href={"/like"}>Likes</Link>
-                                    <Link href={"/track/upload"}>Upload</Link>
-                                    <Avatar onClick={handleProfileMenuOpen}> HP </Avatar>
-
-                                </> :
-                                <>
-                                    <Link
-                                        href={"/auth/signin"}
-                                    >
-                                        Login
-                                    </Link>
-                                </>
+                            {
+                                session ? //fragment react
+                                    <>
+                                        <Link href={"/playlist"}>Playlists</Link>
+                                        <Link href={"/like"}>Likes</Link>
+                                        <Link href={"/track/upload"}>Upload</Link>
+                                        <Avatar
+                                            onClick={handleProfileMenuOpen}
+                                        >ER</Avatar>
+                                    </>
+                                    :
+                                    <>
+                                        <Link
+                                            href={"/auth/signin"}
+                                        >
+                                            Login
+                                        </Link>
+                                    </>
                             }
+
+
                         </Box>
                         <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                             <IconButton
@@ -240,6 +265,6 @@ export default function AppHeader() {
             </AppBar>
             {renderMobileMenu}
             {renderMenu}
-        </Box >
+        </Box>
     );
 }

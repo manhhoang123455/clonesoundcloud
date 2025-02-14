@@ -3,14 +3,17 @@ import { Alert, Snackbar, SnackbarProps } from "@mui/material"
 import * as React from "react"
 import { FC } from "react"
 import { ToastMessage } from "./useToast"
+
 export type ToastStyle = Omit<
     SnackbarProps,
     "TransitionProps" | "onClose" | "open" | "children" | "message"
 >
+
 export type ToastProps = {
     message: ToastMessage
     onExited: () => void
 } & ToastStyle
+
 // https://mui.com/material-ui/react-snackbar/#consecutive-snackbars
 export const Toast: FC<ToastProps> = ({
     message,
@@ -19,6 +22,7 @@ export const Toast: FC<ToastProps> = ({
     ...props
 }) => {
     const [open, setOpen] = React.useState(true)
+
     const handleClose = (
         _event: React.SyntheticEvent | Event,
         reason?: string
@@ -28,6 +32,7 @@ export const Toast: FC<ToastProps> = ({
         }
         setOpen(false)
     }
+
     return (
         <Snackbar
             key={message.key}

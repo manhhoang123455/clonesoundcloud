@@ -1,4 +1,5 @@
 'use client'
+
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import * as React from 'react';
@@ -13,26 +14,6 @@ import axios from 'axios';
 import { useSession } from "next-auth/react";
 import { sendRequest } from '@/utils/api';
 import { useToast } from '@/utils/toast';
-
-
-interface IProps {
-    trackUpload: {
-        fileName: string;
-        percent: number;
-        uploadedTrackName: string;
-    }
-    setValue: (v: number) => void;
-}
-
-interface INewTrack {
-    title: string;
-    description: string;
-    trackUrl: string;
-    imgUrl: string;
-    category: string;
-}
-
-
 
 function LinearProgressWithLabel(props: LinearProgressProps & { value: number }) {
     return (
@@ -49,7 +30,6 @@ function LinearProgressWithLabel(props: LinearProgressProps & { value: number })
     );
 }
 
-
 function LinearWithValueLabel(props: IProps) {
     return (
         <Box sx={{ width: '100%' }}>
@@ -57,7 +37,6 @@ function LinearWithValueLabel(props: IProps) {
         </Box>
     );
 }
-
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -71,19 +50,12 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-
-
-
-function InputFileUpload(props: {
-    setInfo: React.Dispatch<React.SetStateAction<INewTrack>>;
-    info: INewTrack;
-}) {
+function InputFileUpload(props: any) {
     const { setInfo, info } = props;
     const { data: session } = useSession();
     const toast = useToast()
 
-
-    const handleUpload = async (image: File) => {
+    const handleUpload = async (image: any) => {
         const formData = new FormData()
         formData.append('fileUpload', image);
         try {
@@ -101,6 +73,7 @@ function InputFileUpload(props: {
         } catch (error) {
             //@ts-ignore
             toast.error(error?.response?.data?.message)
+            // alert(error?.response?.data?.message)
         }
     }
 
@@ -120,12 +93,27 @@ function InputFileUpload(props: {
 }
 
 
-const Step2 = (props: IProps) => {
+interface IProps {
+    trackUpload: {
+        fileName: string;
+        percent: number;
+        uploadedTrackName: string;
+    }
+    setValue: (v: number) => void;
+}
 
+interface INewTrack {
+    title: string;
+    description: string;
+    trackUrl: string;
+    imgUrl: string;
+    category: string;
+}
+
+const Step2 = (props: IProps) => {
     const { data: session } = useSession();
     const { trackUpload, setValue } = props;
     const toast = useToast();
-
     const [info, setInfo] = React.useState<INewTrack>({
         title: "",
         description: "",
@@ -133,6 +121,7 @@ const Step2 = (props: IProps) => {
         imgUrl: "",
         category: "",
     });
+
     React.useEffect(() => {
         if (trackUpload && trackUpload.uploadedTrackName) {
             setInfo({
@@ -141,6 +130,22 @@ const Step2 = (props: IProps) => {
             })
         }
     }, [trackUpload])
+
+
+    const category = [
+        {
+            value: 'CHILL',
+            label: 'CHILL',
+        },
+        {
+            value: 'WORKOUT',
+            label: 'WORKOUT',
+        },
+        {
+            value: 'PARTY',
+            label: 'PARTY',
+        }
+    ];
 
     const handleSubmitForm = async () => {
         const res = await sendRequest<IBackendRes<ITrackTop[]>>({
@@ -162,31 +167,24 @@ const Step2 = (props: IProps) => {
             toast.success("Create a new track success!")
         } else {
             toast.error(res.message)
+
+            // alert(res.message)
         }
     }
 
-    const category = [
-        {
-            value: 'CHILL',
-            label: 'CHILL',
-        },
-        {
-            value: 'WORKOUT',
-            label: 'WORKOUT',
-        },
-        {
-            value: 'PARTY',
-            label: 'PARTY',
-        }
-    ];
+
     return (
         <div>
             <div>
                 <div>
                     {trackUpload.fileName}
                 </div>
-                <LinearWithValueLabel trackUpload={trackUpload} setValue={setValue} />
+                <LinearWithValueLabel
+                    trackUpload={trackUpload}
+                    setValue={setValue}
+                />
             </div>
+
             <Grid container spacing={2} mt={5}>
                 <Grid item xs={6} md={4}
                     sx={{
@@ -213,6 +211,7 @@ const Step2 = (props: IProps) => {
                             info={info}
                         />
                     </div>
+
                 </Grid>
                 <Grid item xs={6} md={8}>
                     <TextField
@@ -246,6 +245,7 @@ const Step2 = (props: IProps) => {
                         label="Category"
                         fullWidth
                         variant="standard"
+
                     >
                         {category.map((option) => (
                             <MenuItem key={option.value} value={option.value}>
@@ -258,11 +258,14 @@ const Step2 = (props: IProps) => {
                         sx={{
                             mt: 5
                         }}
-                        onClick={handleSubmitForm}
+                        onClick={() => handleSubmitForm()}
                     >Save</Button>
                 </Grid>
             </Grid>
+
         </div>
     )
 }
+
+
 export default Step2;

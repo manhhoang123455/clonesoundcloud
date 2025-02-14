@@ -1,11 +1,9 @@
-
-
 const PlaylistPage = () => {
     return (
         <div>
-            <h1>Playlist Page</h1>
+            playlist page
         </div>
-    );
+    )
 }
 
 export default PlaylistPage;

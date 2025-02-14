@@ -2,21 +2,26 @@
 import { AlertColor } from "@mui/material"
 import { createContext, FC, ReactNode, useContext, useState } from "react"
 import { Toast, ToastStyle } from "./Toast"
+
 export interface ToastMessage {
     message: string
     severity: AlertColor
     key: number
 }
+
 export const ToastContext = createContext<{
     addMessage: (message: ToastMessage) => void
 }>(null as never)
+
 export const ToastProvider: FC<{ children: ReactNode } & ToastStyle> = ({
     children,
     ...props
 }) => {
     const [messages, setMessages] = useState<ToastMessage[]>([])
+
     const removeMessage = (key: number) =>
         setMessages((arr) => arr.filter((m) => m.key !== key))
+
     return (
         <ToastContext.Provider
             value={{
@@ -37,11 +42,14 @@ export const ToastProvider: FC<{ children: ReactNode } & ToastStyle> = ({
         </ToastContext.Provider>
     )
 }
+
 export const useToast = () => {
     const { addMessage } = useContext(ToastContext)
+
     const show = (message: string, options: { severity: AlertColor }) => {
         addMessage({ message, ...options, key: new Date().getTime() })
     }
+
     return {
         show,
         info(message: string) {

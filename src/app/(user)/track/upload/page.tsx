@@ -8,4 +8,5 @@ const UploadPage = () => {
         </Container>
     )
 }
+
 export default UploadPage;

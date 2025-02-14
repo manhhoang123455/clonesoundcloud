@@ -1,11 +1,16 @@
-
+"use client"
+// import { useState } from "react";
 
 const LikePage = () => {
+    // const [name, setName] = useState("Hoi Dan IT")
+    const handleClick = () => {
+        alert("me")
+    }
     return (
-        <div>
-            <h1>Like Page</h1>
+        <div onClick={() => handleClick()}>
+            like page : with name
         </div>
-    );
+    )
 }
 
 export default LikePage;

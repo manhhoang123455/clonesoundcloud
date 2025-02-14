@@ -20,7 +20,7 @@ const MainSlider = (props: IProps) => {
 
     const NextArrow = (props: any) => {
         return (
-            <Button variant="contained" color="inherit"
+            <Button color="inherit" variant="contained"
                 onClick={props.onClick}
                 sx={{
                     position: "absolute",
@@ -35,9 +35,11 @@ const MainSlider = (props: IProps) => {
             </Button>
         )
     }
+
     const PrevArrow = (props: any) => {
         return (
-            <Button color="inherit" variant="contained" onClick={props.onClick}
+            <Button color="inherit" variant="contained"
+                onClick={props.onClick}
                 sx={{
                     position: "absolute",
                     top: "25%",
@@ -59,12 +61,15 @@ const MainSlider = (props: IProps) => {
         nextArrow: <NextArrow />,
         prevArrow: <PrevArrow />,
     };
+    //box === div
     return (
+
         <Box
             sx={{
                 margin: "0 50px",
                 ".track": {
                     padding: "0 10px",
+
                     "img": {
                         height: 150,
                         width: 150
@@ -74,6 +79,7 @@ const MainSlider = (props: IProps) => {
                     border: "1px solid #ccc",
                     padding: "20px",
                     height: "200px",
+
                 }
             }}
         >
@@ -83,7 +89,9 @@ const MainSlider = (props: IProps) => {
                     return (
                         <div className="track" key={track._id}>
                             <img src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/images/${track.imgUrl}`} />
-                            <Link href={`/track/${track._id}?audio=${track.trackUrl}`}><h4>{track.title}</h4></Link>
+                            <Link href={`/track/${track._id}?audio=${track.trackUrl}&id=${track._id}`}>
+                                <h4>{track.title}</h4>
+                            </Link>
                             <h5>{track.description}</h5>
                         </div>
                     )
@@ -91,6 +99,8 @@ const MainSlider = (props: IProps) => {
             </Slider>
             <Divider />
         </Box>
+
     );
 }
+
 export default MainSlider;
