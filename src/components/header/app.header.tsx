@@ -10,18 +10,18 @@ import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession, signIn, signOut } from "next-auth/react";
 import { fetchDefaultImages } from '@/utils/api';
+import Image from 'next/image';
+
 
 //styled-component
 const Search = styled('div')(({ theme }) => ({
@@ -98,16 +98,8 @@ export default function AppHeader() {
     const renderMenu = (
         <Menu
             anchorEl={anchorEl}
-            // anchorOrigin={{
-            //     vertical: 'top',
-            //     horizontal: 'right',
-            // }}
             id={menuId}
             keepMounted
-            // transformOrigin={{
-            //     vertical: 'top',
-            //     horizontal: 'right',
-            // }}
             open={isMenuOpen}
             onClose={handleMenuClose}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
@@ -204,7 +196,7 @@ export default function AppHeader() {
                             }}
                             onClick={() => handleRedirectHome()}
                         >
-                            HoiDanIt SC
+                            Music App
                         </Typography>
                         <Search>
                             <SearchIconWrapper>
@@ -233,17 +225,13 @@ export default function AppHeader() {
                                         <Link href={"/playlist"}>Playlists</Link>
                                         <Link href={"/like"}>Likes</Link>
                                         <Link href={"/track/upload"}>Upload</Link>
-                                        <img
+                                        <Image
                                             onClick={handleProfileMenuOpen}
-                                            style={{
-                                                height: 35, width: 35,
-                                                cursor: "pointer"
-                                            }}
+                                            alt='avatar'
+                                            height={35}
+                                            width={35}
                                             src={fetchDefaultImages(session.user.type)}
                                         />
-                                        {/* <Avatar
-                                            onClick={handleProfileMenuOpen}
-                                        >ER</Avatar> */}
                                     </>
                                     :
                                     <>
