@@ -14,6 +14,7 @@ const AppFooter = () => {
     const { currentTrack, setCurrentTrack } = useTrackContext() as ITrackContext;
 
     useEffect(() => {
+        console.log("currentTrack?.isPlaying", currentTrack?.isPlaying);
         if (currentTrack?.isPlaying === false) {
             //@ts-ignore
             playerRef?.current?.audio?.current?.pause();

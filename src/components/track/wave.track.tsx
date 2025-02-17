@@ -24,6 +24,8 @@ const WaveTrack = (props: IProps) => {
     const [duration, setDuration] = useState<string>("0:00");
     const { currentTrack, setCurrentTrack } = useTrackContext() as ITrackContext;
 
+    const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
     const optionsMemo = useMemo((): Omit<WaveSurferOptions, 'container'> => {
         let gradient, progressGradient;
         if (typeof window !== "undefined") {
@@ -56,10 +58,11 @@ const WaveTrack = (props: IProps) => {
             url: `/api?audio=${fileName}`,
         }
     }, []);
-    const wavesurfer = useWavesurfer(containerRef, optionsMemo);
-    const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
     // Initialize wavesurfer when the container mounts
     // or any of the props change
+    const wavesurfer = useWavesurfer(containerRef, optionsMemo);
+
     useEffect(() => {
         if (!wavesurfer) return;
         setIsPlaying(false);
@@ -132,14 +135,17 @@ const WaveTrack = (props: IProps) => {
     }
 
     useEffect(() => {
-        if (wavesurfer && currentTrack.isPlaying) {
+        if (wavesurfer && currentTrack.isPlaying === true) {
             wavesurfer.pause();
         }
-    }, [currentTrack])
+    }, [currentTrack?.isPlaying])
 
     useEffect(() => {
+        console.log("track", track)
         if (track?._id && !currentTrack?._id)
             setCurrentTrack({ ...track, isPlaying: false })
+
+        console.log("currentTrack", currentTrack)
     }, [track])
 
     return (
@@ -273,6 +279,14 @@ const WaveTrack = (props: IProps) => {
                         width: 250,
                         height: 250
                     }}>
+                        <img
+                            style={
+                                {
+                                    width: "100%",
+                                    height: "100%"
+                                }
+                            }
+                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/images/${track?.imgUrl}`} alt="" />
                     </div>
                 </div>
             </div>
