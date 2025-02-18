@@ -2,6 +2,7 @@ import WaveTrack from '@/components/track/wave.track';
 import Container from '@mui/material/Container';
 import { sendRequest } from '@/utils/api';
 import type { Metadata, ResolvingMetadata } from 'next'
+import { notFound } from 'next/navigation'
 
 type Props = {
     params: { slug: string }
@@ -53,6 +54,11 @@ const DetailTrackPage = async (props: any) => {
             sort: "-createdAt"
         },
     })
+
+    await new Promise(resolve => setTimeout(resolve, 3000))
+
+    if (!res?.data)
+        notFound()
 
     return (
         <Container>
