@@ -1,7 +1,7 @@
 {
-  "name": "nextjs-mui-ts-template-by-hoidanit",
-  "author": "Hỏi Dân IT với Eric",
-  "description": "https://www.youtube.com/@hoidanit",
+  "name": "nextjs-mui-ts",
+  "author": "pnmhoang",
+  "description": "Next.js with Material-UI and TypeScript",
   "version": "1.0.0",
   "private": true,
   "scripts": {
