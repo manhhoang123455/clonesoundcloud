@@ -2,12 +2,18 @@ import ProfileTracks from "@/components/header/profile.tracks";
 import { sendRequest } from "@/utils/api";
 import { Container, Grid } from "@mui/material";
 
+
 const ProfilePage = async ({ params }: { params: { slug: string } }) => {
 
     const tracks = await sendRequest<IBackendRes<IModelPaginate<ITrackTop>>>({
         url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/tracks/users?current=1&pageSize=10`,
         method: "POST",
-        body: { id: params.slug }
+        body: { id: params.slug },
+        nextOption: {
+            next: {
+                tags: ['track-by-profile']
+            }
+        }
     })
     const data = tracks?.data?.result ?? [];
     return (

@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { sendRequest } from '@/utils/api';
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { revalidateTag } from 'next/cache'
 
 
 interface IProps {
@@ -37,6 +38,7 @@ const LikeTrack = (props: IProps) => {
     }
     useEffect(() => {
         fetchData();
+
     }, [session])
 
     const handleLikeTrack = async () => {
@@ -53,6 +55,14 @@ const LikeTrack = (props: IProps) => {
         })
 
         fetchData();
+        await sendRequest<IBackendRes<any>>({
+            url: `/api/revalidate`,
+            method: "POST",
+            queryParams: {
+                tag: "track-by-id",
+                secret: "justArandomString"
+            }
+        })
         router.refresh();
 
     }
